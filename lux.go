@@ -1,40 +1,48 @@
 package main
 
 import (
-    "os"
-    "fmt"
-    "net/http"
-    "log"
-    "time"
-    "ioutil"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/mixxtokent/lux/dto/league"
 )
 
 func main() {
-    apikey := os.Getenv("APIKEY")
-    fmt.Println(apikey)
+	reg := "br1"
+	apikey := os.Getenv("APIKEY")
+	lurl := "https://" + reg + ".api.riotgames.com/lol/league/v3/masterleagues/by-queue/RANKED_FLEX_SR"
 
-    region := "kr"
-    urlbase := "https://" + region + ".api.riotgames.com/lol/"
-    // urllm := urlbase + "league/v3/challengerleagues/by-queue/"
-    urllc := urlbase + "league/v3/masterleagues/by-queue/"
-    queue := "RANKED_FLEX_SR"
+	cli := http.Client{
+		Timeout: time.Second * 60,
+	}
 
-    urlltest := urllc + queue
-    cli := http.Client{
-        Timeout: time.Second * 60,
-    }
-    req, err := http.NewRequest(http.MethodGet, urlltest, nil)
-    if err != nil {
-        log.Fatal(err)
-    }
-    req.Header.Set("X-Riot-Token", apikey)
-    res, getErr := cli.Do(req)
-    if getErr != nil {
-        log.Fatal(getErr)
-    }
-    fmt.Println(res)
-    body, readErr := ioutil.ReadAll(res.Body)
-    if readErr != nil {
-        log.Fatal(readErr)
-    }
+	req, err := http.NewRequest(http.MethodGet, lurl, nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Set("X-Riot-Token", apikey)
+	resp, err := cli.Do(req)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	dec := json.NewDecoder(resp.Body)
+	for dec.More() {
+		var league league.LeagueListDTO
+		err := dec.Decode(&league)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, ent := range league.Entries {
+			fmt.Println(ent.PlayerOrTeamID)
+		}
+	}
 }

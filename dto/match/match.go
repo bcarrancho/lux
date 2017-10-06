@@ -150,6 +150,16 @@ type RuneDTO struct {
 }
 
 type ParticipantTimelineDTO struct {
+	Lane                        string
+	ParticipantID               int
+	CSDiffPerMinDeltas          map[string]float64
+	GoldPerMinDeltas            map[string]float64
+	XPDiffPerMinDeltas          map[string]float64
+	CreepsPerMinDeltas          map[string]float64
+	XPPerMinDeltas              map[string]float64
+	Role                        string
+	DamageTakenDiffPerMinDeltas map[string]float64
+	DamageTakenPerMinDeltas     map[string]float64
 }
 
 type MasteryDTO struct {

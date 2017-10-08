@@ -11,12 +11,15 @@ import (
 	"github.com/mixxtokent/lux/dto/league"
 )
 
+var apikey string
+var cli http.Client
+
 func main() {
 	reg := "br1"
-	apikey := os.Getenv("APIKEY")
+	apikey = os.Getenv("APIKEY")
 	lurl := "https://" + reg + ".api.riotgames.com/lol/league/v3/masterleagues/by-queue/RANKED_FLEX_SR"
 
-	cli := http.Client{
+	cli = http.Client{
 		Timeout: time.Second * 60,
 	}
 
@@ -44,5 +47,6 @@ func main() {
 		for _, ent := range league.Entries {
 			fmt.Println(ent.PlayerOrTeamID)
 		}
+
 	}
 }
